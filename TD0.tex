@@ -1,0 +1,156 @@
+\documentclass[12pt]{article}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+
+% Title and header
+\title{Université Paris Dauphine M1 MA\\Statistical learning\\TD 0 : Introduction to Statistical Learning}
+\author{}
+\date{}
+
+% Define a custom environment for solutions
+\newenvironment{solution}{\vspace{0.2cm}\color{blue}\textbf{Solution:}}{\hfill\ensuremath{\Box}}
+
+\begin{document}
+\maketitle
+
+% Exercise 1
+\section*{Exercise 1: Reminder on Measurability}
+Let $(\Omega, \mathcal{A}, P)$ be a probability space and let us equip $\mathbb{R}^d$ with the Borel $\sigma$-algebra.
+
+Let $X$ be a $\mathbb{R}^d$-valued random variable and $Y$ a real-valued random variable. Prove that there exists a measurable function $f : \mathbb{R}^d \to \mathbb{R}$ such that $Y = f(X)$ if and only if $Y$ is $\sigma(X)$-measurable.
+
+\begin{solution}
+
+    "$\Rightarrow $":
+    Take a measurable function $f$ such that $Y = f(X)$. Let $B\in \mathcal{B}(\mathbb{R})$, we have:
+    \[Y^{-1}(B) = X^{-1}(f^{-1}(B)).\]
+    Since $f$ is measurable, the preimage $f^{-1}(B)$ is a Borel set in $\mathbb{R}^d$. Therefore, $X^{-1}(f^{-1}(B))$ is in $\sigma(X)$. Therefore $Y$ is $\sigma(X)$-measurable. 
+    
+    "$\Leftarrow $":
+    If $Y$ is $\sigma(X)$-measurable, then by the standard result (sometimes called the "technical lemma" or "lemme technique"—see e.g., Proposition 1.1.7 in \textit{Probability: Theory and Examples} by Rick Durrett), any $\sigma(X)$-measurable function can be written as a countable sum of indicator functions of sets in $\sigma(X)$. This means there exists a measurable function $f$ such that $Y = f(X)$, where $f$ is constructed from the measurable sets in $\sigma(X)$. That is to say, there exists a countable collection of sets $A_i \in \sigma(X), i\in \mathbb{N}$ and real coefficients $a_i, i\in \mathbb{N}$ such that:
+    \[Y = \sum_{i=1}^{\infty} a_i \mathbf{1}_{A_i}.\]
+    Here, $\mathbf{1}_{A_i}$ denotes the indicator function of the set $A_i$, i.e., $\mathbf{1}_{A_i}(\omega) = 1$ if $\omega \in A_i$ and $0$ otherwise.
+    Since each $A_i \in \sigma(X)$, there exists a Borel set $B_i \subseteq \mathbb{R}^d$ such that $A_i = X^{-1}(B_i)$, this is true because the preimages of all sets of a sigma algebra by a measurable function forms a sigma algebra, thus $\sigma(X)=\{X^{-1}(B)|B\in \mathcal{B}(\mathbb{R})\}$(Note that this is not true when $X$ is not measurable) . Thus, we can define
+    \[f(x) = \sum_{i=1}^{\infty} a_i \mathbf{1}_{B_i}(x).\]
+    To see why $f$ is measurable, note that each $\mathbf{1}_{B_i}$ is measurable as an indicator function of a Borel set, and multiplying by a constant preserves measurability; moreover, the countable sum of measurable functions is measurable because the pointwise limit of measurable functions is measurable.
+    For any $\omega \in \Omega$, we have:
+    \[f(X(\omega)) = \sum_{i=1}^{\infty} a_i \mathbf{1}_{B_i}(X(\omega)).\]
+    By definition of $A_i = X^{-1}(B_i)$, we have $X(\omega) \in B_i$ if and only if $\omega \in A_i$, so $\mathbf{1}_{B_i}(X(\omega)) = \mathbf{1}_{A_i}(\omega)$ for each $i$.
+
+    Therefore,
+    \[\sum_{i=1}^{\infty} a_i \mathbf{1}_{B_i}(X(\omega)) = \sum_{i=1}^{\infty} a_i \mathbf{1}_{A_i}(\omega)\]
+    Thus, we can write: $Y = f(X)$.
+\end{solution}
+
+% Exercise 2
+\section*{Exercise 2: Conditional Expectation}
+Let $X$ and $Z$ be two real-valued random variables. $X$ is assumed to be integrable.
+
+\begin{enumerate}
+    \item Recall the definition of $\mathbb{E}[X \mid \mathcal{G}]$ when $\mathcal{G}$ is a $\sigma$-field.
+    \item Write the definition of $\mathbb{E}[X \mid Z]$.
+    \item Prove that there exists a function $h : \mathbb{R} \to \mathbb{R}$ measurable such that $\mathbb{E}[X \mid Z] = h(Z)$ a.s.
+    \item Write down the exact formula for the function $h$ when $Z$ takes its values in a countable space $E \subseteq \mathbb{R}$.
+    \item Provide the exact formula for the function $h$ when $(X, Z)$ admits a density $f_{(X,Z)}(x, z)$ with respect to the Lebesgue measure.
+\end{enumerate}
+
+\begin{solution}
+
+1,
+
+Let $X \in L^1(\mathcal{F})$. There exists a unique (up to a.s. equality) random variable, denoted $\mathbb{E}[X \mid \mathcal{G}]$, such that:
+\begin{enumerate}[label=(\alph*)]
+    \item $\mathbb{E}[X \mid \mathcal{G}]$ is $\mathcal{G}$-measurable,
+    \item $\mathbb{E}[X \mid \mathcal{G}]$ is integrable,
+    \item For any bounded, $\mathcal{G}$-measurable random variable $Z$,
+    \[
+        \mathbb{E}[XZ] = \mathbb{E}[\mathbb{E}[X \mid \mathcal{G}] Z].
+    \]
+\end{enumerate}
+
+2,
+
+    \[
+        \mathbb{E}[X|Z] = \mathbb{E}[X | \sigma(Z)] .
+    \]
+
+3,
+    By the definition of conditional expectation, and the results of Exercise 1, there exists a measurable function $h : \mathbb{R} \to \mathbb{R}$ such that $\mathbb{E}[X \mid Z] = h(Z)$ a.s. 
+
+4,
+    If $Z$ takes its values in a countable space $E \subseteq \mathbb{R}$, then we can write:
+    \[
+    h(z) = \sum_{e \in E,\mathbb{P}(Z = e)>0} \frac{\mathbb{E}[X \mathbf{1}_{\{Z = e\}}]}{\mathbb{P}(Z = e)} \mathbf{1}_{\{e\}}(z)
+    \]
+    Actually, this formula can be derived this way:
+    \[
+    \mathbb{E}[X \mid Z] = \sum_{e \in E} \mathbb{E}[X \mid Z]  \mathbf{1}_{\{Z = e\}}.
+    \].
+    Since $\mathbb{E}[X|Z]$ is $\sigma(Z)$-measurable,  $\mathbb{E}[X \mid Z]  \mathbf{1}_{\{Z = e\}}$ can only take values either $0$ or $h(e)$ with probability $\mathbb{P}(Z= e)$. By the definition of conditional expectation, we have:
+    \[\mathbb{E}[X\mathbf{1}_{\{Z = e\}}]=\mathbb{E}[\mathbb{E}[X \mid Z]\mathbf{1}_{\{Z = e\}}] = h(e)\mathbb{P}(Z= e).\]
+    Thus \[h(e)=\frac{\mathbb{E}[X \mathbf{1}_{\{Z = e\}}]}{\mathbb{P}(Z = e)}.\] when $\mathbb{P}(Z = e) > 0$. By also setting $h(e) = 0$ when $\mathbb{P}(Z = e) = 0$, we can have a well-defined function $h$ that is measureable such that $\mathbb{E}[X \mid Z] = h(Z)$ a.s.
+    
+    Note that there is another definition of conditional expectation with respect to an event $A \in \mathcal{F}$ as  which is defined as expectation of a random variable $X$ with respect to a new probability measure $\mathbb{P}_A$ defined by $\mathbb{P}_A(B) = \mathbb{P}(B \mid A)= \frac{\mathbb{P}(B \cap A)}{\mathbb{P}(A)}=\int_B \frac{\mathbf{1}_A}{\mathbb{P}(A)}d\mathbb{P}$ for all $B \in \mathcal{F}$ when $\mathbb{P}(A)>0$:
+    \[\mathbb{E}[X \mid A] := \mathbb{E}_A[X]=\int Xd\mathbb{P}_A  = \frac{\int X \mathbf{1}_A d\mathbb{P}}{\mathbb{P}(A)} = \frac{\mathbb{E}[X \mathbf{1}_A]}{\mathbb{P}(A)}.\]
+    
+   
+    
+    With this notation, we can also write:
+    \[h(e)  = \frac{\mathbb{E}[X \mathbf{1}_{\{Z = e\}}]}{\mathbb{P}(Z = e)}= \mathbb{E}[X \mid Z = e].\]
+5,
+    If $(X, Z)$ admits a density $f_{(X,Z)}(x, z)$ with respect to the Lebesgue measure, then we can write:
+    \[h(z) = \int_{\mathbb{R}} x \frac{f_{(X,Z)}(x, z)}{f_{Z}(z)}\mathbf{1}_{f_{Z}(z)>0} dx.\]
+    This can be derived the following way:
+    Take $B \in \mathcal{B}(\mathbb{R})$, then we have:
+    \begin{align*}
+        \int_{\mathbb{R}} h(z)\mathbf{1}_{B}(z)f_{Z}(z) dz 
+        &= \mathbb{E}[h(Z)\mathbf{1}_{\{Z \in B\}}] \\
+        &= \mathbb{E}[X \mathbf{1}_{\{Z \in B\}}] \\
+        &= \int_{\mathbb{R}^2} x \mathbf{1}_{B}(z) f_{(X,Z)}(x, z) dx\,dz \\
+        &= \int_{\mathbb{R}} \left( \int_{\mathbb{R}} x f_{(X,Z)}(x, z) dx \right) \mathbf{1}_{B}(z) dz.
+    \end{align*}
+    By arbitrary choice of $B$, for almost all $z\in \mathbb{R}$, we have \[\int_{\mathbb{R}} x f_{(X,Z)}(x, z) dx = h(z)f_{Z}(z).\] 
+    If we have $f_{Z}(z)=0$, i.e., $\int_{\mathbb{R}} f_{(X,Z)}(x, z) dx = 0$, we have \[f_{(X,Z)}(x, z)=0\] for almost all $x$ in $\mathbb{R}$, thus \[x f_{(X,Z)}(x, z) \mathbf{1}_{f_{Z}(z)>0}=0\] for almost all $x$ in $\mathbb{R}$, thus its integral will become zero. Therefore, if $f_{Z}(z) = 0$,  we can simply take $h(z)=0$. If $f_{Z}(z) > 0$, we can divide both sides by $f_{Z}(z)$ to conclude.
+
+\end{solution}
+
+% Exercise 3
+\section*{Exercise 3: Conditional Expectation - Examples}
+\begin{enumerate}
+    \item Let $X$ and $Y$ be two independent, identically distributed and integrable random variables. Prove that $\mathbb{E}[X \mid X + Y] = \frac{X+Y}{2}$ a.s.
+    \item Let $X_1$ and $X_2$ be two independent Poisson variables with parameters $\lambda_1$ and $\lambda_2$.
+    \begin{enumerate}
+        \item What is the distribution of $X_1$ given $X_1 + X_2$?
+        \item Calculate $\mathbb{E}[X_1 \mid X_1 + X_2]$.
+    \end{enumerate}
+    \item Let $X_1, X_2, X_3$ be i.i.d. $\mathbb{E}(\theta)$. Give the law of the pair $(X_2 - X_1, X_3 - X_1)$ given $X_1$.
+\end{enumerate}
+
+\begin{solution}
+\end{solution}
+
+% Exercise 4
+\section*{Exercise 4: Conditional Independence}
+Let $X$ and $Y$ be two random variables in a measure space $(E, \mathcal{E})$ and let $\mathcal{G}$ be a sigma-algebra. $X$ and $Y$ are independent given $\mathcal{G}$ if for all measurable functions $f$ and $g$ from $E$ to $\mathbb{R}^+$,
+\[
+\mathbb{E}[f(X)g(Y) \mid \mathcal{G}] = \mathbb{E}[f(X) \mid \mathcal{G}] \mathbb{E}[g(Y) \mid \mathcal{G}].
+\]
+
+\begin{enumerate}
+    \item What does this mean if $\mathcal{G} = \{\emptyset, \Omega\}$?
+    \item Prove that the above definition is equivalent to: for any positive $\mathcal{G}$-measurable random variable $Z$, and for any measurable functions $f$ and $g$ from $\mathbb{R}$ to $\mathbb{R}^+$,
+    \[
+    \mathbb{E}[f(X)g(Y)Z] = \mathbb{E}[f(X)Z\mathbb{E}[g(Y) \mid \mathcal{G}]].
+    \]
+    \item Prove that the above definition is also equivalent to: for any measurable function $g$ from $\mathbb{R}$ to $\mathbb{R}^+$,
+    \[
+    \mathbb{E}[g(Y) \mid \sigma(\mathcal{G}, X)] = \mathbb{E}[g(Y) \mid \mathcal{G}].
+    \]
+\end{enumerate}
+
+\begin{solution}
+\end{solution}
+
+\end{document}
