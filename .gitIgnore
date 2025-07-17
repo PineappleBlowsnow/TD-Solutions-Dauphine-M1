@@ -1,9 +1,12 @@
 # Ignore everything
 *
 
+# Don't ignore directories, so we can look inside them
+!*/
+
 # Do not ignore .gitignore itself
 !.gitignore
 
 # Do not ignore all .tex and .pdf files
-!*.tex
-!*.pdf
+!**/*.tex
+!**/*.pdf
