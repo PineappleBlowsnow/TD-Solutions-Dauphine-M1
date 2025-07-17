@@ -3,6 +3,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{enumitem}
+% For double brackets
+\usepackage{stmaryrd}
 
 % Title and header
 \title{Université Paris Dauphine M1 MA\\Statistical learning\\TD 0 : Introduction to Statistical Learning}
@@ -125,32 +127,108 @@ Let $X \in L^1(\mathcal{F})$. There exists a unique (up to a.s. equality) random
         \item What is the distribution of $X_1$ given $X_1 + X_2$?
         \item Calculate $\mathbb{E}[X_1 \mid X_1 + X_2]$.
     \end{enumerate}
-    \item Let $X_1, X_2, X_3$ be i.i.d. $\mathbb{E}(\theta)$. Give the law of the pair $(X_2 - X_1, X_3 - X_1)$ given $X_1$.
+    \item Let $X_1, X_2, X_3 \sim_{i.i.d.} \mathcal{E}(\alpha)$. Give the law of the pair $(X_2 - X_1, X_3 - X_1)$ given $X_1$.
 \end{enumerate}
 
 \begin{solution}
+\begin{enumerate}[label=\arabic*.]
+    \item First, note that $\frac{X+Y}{2}$ is $\sigma(X+Y)$-measurable. Take any bounded, $\sigma(X+Y)$-measurable function $g$.
+    Since $X$ and $Y$ are independent and identically distributed, the pair $(X, Y)$ has the same distribution as $(Y, X)$.
+    Therefore, $(X, X+Y)$ has the same distribution as $(Y, X+Y)$.
+    This implies $\mathbb{E}[g(X+Y)X] = \mathbb{E}[g(Y+X)Y]$.
+    So, $\mathbb{E}[g(X+Y)X] = \mathbb{E}[g(X+Y)Y]$.
+    Summing them up, we get $2\mathbb{E}[g(X+Y)X] = \mathbb{E}[g(X+Y)(X+Y)]$.
+    By the definition of conditional expectation, this means
+    \[\mathbb{E}[X \mid X+Y] = \mathbb{E}[Y \mid X+Y] = \frac{X+Y}{2} \quad \text{a.s.}\]
+
+    \item 
+    \begin{enumerate}[label=(\alph*)]
+        \item $X_1 + X_2$ takes values in $\mathbb{N}$, and is a Poisson variable with parameter $\lambda_1 + \lambda_2$. Fix $n \in \mathbb{N}$, for any $k \in \llbracket 0, n \rrbracket$, we have
+        \begin{align*}
+        P(X_1 = k \mid X_1 + X_2 = n) 
+        &= \frac{P(X_1 = k, X_2 = n - k)}{P(X_1 + X_2 = n)} \\
+        &= \frac{\frac{(\lambda_1)^k e^{-\lambda_1}}{k!} \cdot \frac{(\lambda_2)^{n-k} e^{-\lambda_2}}{(n-k)!}}{\frac{(\lambda_1 + \lambda_2)^n e^{-(\lambda_1 + \lambda_2)}}{n!}} \\
+        &= \frac{n!}{k!(n-k)!} \left(\frac{\lambda_1}{\lambda_1 + \lambda_2}\right)^k \left(\frac{\lambda_2}{\lambda_1 + \lambda_2}\right)^{n-k}.
+        \end{align*}
+        This is the probability mass function of a binomial distribution with parameters $n$ and $p = \frac{\lambda_1}{\lambda_1 + \lambda_2}$. So, $X_1 \mid (X_1+X_2=n) \sim \mathcal{B}(n, p)$.
+
+        \item From the result above, the conditional expectation is the expectation of the corresponding binomial distribution:
+        \[\mathbb{E}[X_1 \mid X_1 + X_2 = n] = n \cdot p = n \frac{\lambda_1}{\lambda_1 + \lambda_2}.\]
+        Thus, as a random variable,
+        \[\mathbb{E}[X_1 \mid X_1 + X_2] = (X_1+X_2) \frac{\lambda_1}{\lambda_1 + \lambda_2}.\]
+    \end{enumerate}
+
+    \item Let $x>0$, and $(Y_2, Y_3) := (X_2-X_1, X_3-X_1)$. We want to find the conditional distribution of $(Y_2, Y_3)$ given $X_1=x$.
+    Take an arbitrary bounded continuous function $g : \mathbb{R}^2 \to \mathbb{R}$. We have:
+    \begin{align*}
+        \mathbb{E}[g(Y_2, Y_3) \mid X_1 = x] 
+        &= \mathbb{E}[g(X_2 - x, X_3 - x) \mid X_1 = x] \\
+        &= \mathbb{E}[g(X_2 - x, X_3 - x)] \\
+        &= \int_{\mathbb{R}^2} g(y_2,y_3)\alpha^2 e^{-\alpha(y_2+x+y_3+x)}\mathbf{1}_{y_2>-x,y_3>-x} dy_2 dy_3,
+    \end{align*}
+    where the second last equality follows from the fact that $X_1$, $X_2$ and $X_3$ are independent.
+    By arbitrary choice of $g$, we have:\[f_{(X_2-X_1,X_3-X_1)|X_1=x}(y_2,y_3) = \alpha^2 e^{-\alpha(y_2+x+y_3+x)}\mathbf{1}_{y_2>-x,y_3>-x}.\]
+    This means that the conditional distribution of $ (X_2-X_1, X_3-X_1)$ given $X_1 = x$ is the same as the joint distribution of two independent exponential random variables with parameter $\alpha$, shifted by $x$.
+\end{enumerate}
 \end{solution}
 
 % Exercise 4
-\section*{Exercise 4: Conditional Independence}
-Let $X$ and $Y$ be two random variables in a measure space $(E, \mathcal{E})$ and let $\mathcal{G}$ be a sigma-algebra. $X$ and $Y$ are independent given $\mathcal{G}$ if for all measurable functions $f$ and $g$ from $E$ to $\mathbb{R}^+$,
-\[
-\mathbb{E}[f(X)g(Y) \mid \mathcal{G}] = \mathbb{E}[f(X) \mid \mathcal{G}] \mathbb{E}[g(Y) \mid \mathcal{G}].
-\]
+\section*{Exercise 4: Conditional independence}
+Let $X$ and $Y$ be two random variables in a measure space $(E, \mathcal{E})$ and let $\mathcal{G}$ be a sigma-algebra. $X$ and $Y$ are
+independent given $\mathcal{G}$ if for all measurable functions $f$ and $g$ from $E$ to $\mathbb{R}^+$,
+\[\mathbb{E}[f(X)g(Y) \mid \mathcal{G}] = \mathbb{E}[f(X) \mid \mathcal{G}]\mathbb{E}[g(Y) \mid \mathcal{G}]\]
 
 \begin{enumerate}
     \item What does this mean if $\mathcal{G} = \{\emptyset, \Omega\}$?
-    \item Prove that the above definition is equivalent to: for any positive $\mathcal{G}$-measurable random variable $Z$, and for any measurable functions $f$ and $g$ from $\mathbb{R}$ to $\mathbb{R}^+$,
-    \[
-    \mathbb{E}[f(X)g(Y)Z] = \mathbb{E}[f(X)Z\mathbb{E}[g(Y) \mid \mathcal{G}]].
-    \]
+    \item Prove that the above definition is equivalent to: for any positive $\mathcal{G}$-measurable random variable $Z$, and
+for any measurable functions $f$ and $g$ from $\mathbb{R}$ to $\mathbb{R}^+$,
+\[\mathbb{E}[f(X)g(Y)Z] = \mathbb{E}[f(X)Z\mathbb{E}[g(Y) \mid \mathcal{G}]].\]
     \item Prove that the above definition is also equivalent to: for any measurable function $g$ from $\mathbb{R}$ to $\mathbb{R}^+$,
-    \[
-    \mathbb{E}[g(Y) \mid \sigma(\mathcal{G}, X)] = \mathbb{E}[g(Y) \mid \mathcal{G}].
-    \]
+\[\mathbb{E}[g(Y) \mid \sigma(\mathcal{G},X)] = \mathbb{E}[g(Y) \mid \mathcal{G}].\]
 \end{enumerate}
 
 \begin{solution}
+
+1,
+    If $\mathcal{G} = \{\emptyset, \Omega\}$, then the conditional expectation $\mathbb{E}[f(X)g(Y) \mid \mathcal{G}]$ is simply $\mathbb{E}[f(X)g(Y)]$, which is a constant. To verify this, we can take a random varaible $Z=1$, then we have $\mathcal{G}=\sigma(Z)$. Thus any conditional expectation with respect to $\mathcal{G}$ is of the form $h(Z)$ for a measurable function $h$, i.e., constant a.s..
+    By taking expectation again, we have that the conditional expectation with respect to $\mathcal{G}$ is equal to the unconditional expectation.
+    
+    The independence condition simplifies to:
+    \[\mathbb{E}[f(X)g(Y)] = \mathbb{E}[f(X)]\mathbb{E}[g(Y)],\]
+    which is one of the definition of independence of $X$ and $Y$.
+
+2,
+    Suppose the above definition holds. Let $Z$ be a positive $\mathcal{G}$-measurable random variable. Then, for any measurable functions $f$ and $g$, we have:
+    \[\mathbb{E}[f(X)g(Y)Z] = \mathbb{E}[\mathbb{E}[f(X)g(Y) \mid \mathcal{G}]Z] = \mathbb{E}[\mathbb{E}[f(X) \mid \mathcal{G}]\mathbb{E}[g(Y) \mid \mathcal{G}]Z].\]
+    Since $\mathbb{E}[g(Y) \mid \mathcal{G}]Z$ is also a positive $\mathcal{G}$-measurable random variable, we can write:
+    \[\mathbb{E}[f(X)g(Y)Z] = \mathbb{E}[f(X)Z\mathbb{E}[g(Y) \mid \mathcal{G}]].\]
+    Conversely, suppose the second condition holds. Since $\mathbb{E}[g(Y) \mid \mathcal{G}]Z$ is also a positive $\mathcal{G}$-measurable random variable, we can write:
+    \[\mathbb{E}[f(X)\mathbb{E}[g(Y) \mid \mathcal{G}]Z] = \mathbb{E}[\mathbb{E}[f(X) \mid \mathcal{G}]\mathbb{E}[g(Y) \mid \mathcal{G}]Z]=\mathbb{E}[f(X)g(Y)Z].\]
+    Thus the first condition holds.
+
+3,
+    Suppose the above definition holds. Let \[\mathcal{C}=\{ A \in \sigma(\mathcal{G},X) \mid \mathbb{E}[\mathbf{1}_A g(Y)] = \mathbb{E}[\mathbf{1}_A\mathbb{E}[g(Y) \mid \mathcal{G}]]\}.\]
+    On the one hand, we to show that $\mathcal{C}$ is a monotone class, or $\lambda$-system, i.e., it is closed by difference and monotnne countable union, and contains the $\Omega$ .
+    Closedness by difference is from linearity of expectation. Closedness by monotone countable union is from the monotone convergence theorem. It obviously contains $\Omega$.
+
+    On the other hand, we want to show that $\mathcal{P}:= \{A\cup B \mid A \in\sigma(X), B\in\mathcal{G} \}$ is a $\pi$-system, and is a subset of $\mathcal{C}$.
+    $\mathcal{P}$ is a $\pi$-system because it is closed by intersection, and contains the empty set.
+    Take $A \in \sigma(X)$ and $B \in \mathcal{G}$. $\mathbf{1}_A$ can be written in the form of $f(X)$ for some positive measurable function $f$, and $\mathbf{1}_B$ is $\mathcal{G}$-measurable. Thus, we have:
+    \[\mathbb{E}[\mathbf{1}_A g(Y) \mathbf{1}_B] = \mathbb{E}[f(X)g(Y) \mathbf{1}_B] = \mathbb{E}[f(X)\mathbb{E}[g(Y) \mid \mathcal{G}]\mathbf{1}_B].\]
+    Therefore, we have:
+    \[\mathbb{E}[\mathbf{1}_{A\cap B} g(Y)] = \mathbb{E}[\mathbf{1}_A g(Y) \mathbf{1}_B] = \mathbb{E}[\mathbf{1}_A\mathbb{E}[g(Y) \mid \mathcal{G}]\mathbf{1}_B] = \mathbb{E}[\mathbf{1}_{A\cap B}\mathbb{E}[g(Y) \mid \mathcal{G}]].\],i.e., $A\cap B \in \mathcal{C}$. By The monotone class theorem, we have $\mathcal{C}$ contains $\sigma(\mathcal{P})$, i.e., $\sigma(\mathcal{G},X) \subseteq \mathcal{C}$.
+    By the definition of conditional expectation, we have:
+    \[\mathbb{E}[g(Y) \mid \sigma(\mathcal{G},X)] = \mathbb{E}[g(Y) \mid \mathcal{G}].\]
+    Conversely, suppose the third condition holds. Let $B \in \mathcal{G}$, we have $\mathbf{1}_B f(X)$ is $\sigma(\mathcal{G},X)$-measurable, and thus we can write:
+    \[\mathbb{E}[\mathbf{1}_B f(X)g(Y)] = \mathbb{E}[\mathbf{1}_Bf(X)\mathbb{E}[g(Y) \mid \sigma(\mathcal{G},X)]]= \mathbb{E}[\mathbf{1}_B f(X)\mathbb{E}[g(Y) \mid \mathcal{G}]].\]
+    Since $\mathbf{1}_B f(X)\mathbb{E}[g(Y) \mid \mathcal{G}]$ is $\mathcal{G}$-measurable, we can write:
+    \[\mathbb{E}[\mathbf{1}_B f(X)\mathbb{E}[g(Y) \mid \mathcal{G}]]= \mathbb{E}[\mathbf{1}_B\mathbb{E}[g(Y) \mid \mathcal{G}]\mathbb{E}[f(X) \mid \mathcal{G}]].\]
+    Thus we have:
+    \[\mathbb{E}[\mathbf{1}_B f(X)g(Y)] = \mathbb{E}[\mathbf{1}_B\mathbb{E}[g(Y) \mid \mathcal{G}]\mathbb{E}[f(X) \mid \mathcal{G}]].\]
+    By the definition of conditional expectation, we have:
+    \[\mathbb{E}[f(X)g(Y) \mid \mathcal{G}] = \mathbb{E}[f(X) \mid \mathcal{G}]\mathbb{E}[g(Y) \mid \mathcal{G}].\]
+    Therefore, the first condition holds.
+
 \end{solution}
 
 \end{document}
